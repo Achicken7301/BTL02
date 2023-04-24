@@ -228,14 +228,102 @@ void KnightAdventure::loadArmyKnights(const string &filename)
     armyKnights->printInfo();
 }
 
-void KnightAdventure::loadEvents(const string &)
+void KnightAdventure::loadEvents(const string &file_event)
 {
-    // TODO:
-}
+    std::cout<<'Load Event'<<endl;
+    Events *events=new Events(file_event);
+    int num_event=events->count();
+    std::cout<<std::to_string(num_event)<<endl;
+    for (int i=0;i<num_event;i++)
+    {
+        printf("Event no %d: %d \n",i,events->get(i));
+    }
+};
 
 void KnightAdventure::run()
 {
     // TODO:
 }
+// Class Event
 
+// Class Events
+// Void to Import file
+void import(string file_array_string, int* &arr,int &num_arr)
+{
+    string line;
+    ifstream myfile(file_array_string);
+    if (myfile.is_open())
+    {
+        int pos = myfile.tellg();
+        while (getline(myfile, line))
+        {
+            if(pos==0)
+            {
+                num_arr=std::stoi(line);
+            }
+            else
+            {
+                extract_line_num(line, arr, num_arr, " ");
+                relocate(arr, num_arr);
+            }
+            pos = myfile.tellg(); // end pos in a line
+        }
+        myfile.seekg(0); // set file pointer to the beginning of the file
+        myfile.close();
+    }
+    else
+        cout << "Unable to open Input file";
+}
+// From each line convert to int and save into the address of variable
+void extract_line_num(string line, int *array_address, int array_length, string delimeter)
+{
+    int length = line.length();
+    int i = 0;
+    // Generate variable tmp to store substring fron line string
+    int line_blank;
+    string line_num;
+
+    // 5 is element value of kngiht's propertise
+    while (i < array_length)
+    {
+        int line_blank = line.find(delimeter);
+        string line_num;
+        line_num = line.substr(0, line_blank);
+        array_address[i] = std::stoi(line_num);
+        i++;
+        line = line.substr(line_blank + 1, length - line_blank);
+    }
+}
+// Caculate the num of element from file (just in event)
+int countFreq(string array_string, string array_char)
+{
+    int length = array_string.length();
+    string tmp = array_string;
+    int res = 0;
+    int found = array_string.find(array_char);
+    for (int i = 0; i <= length; i++)
+    {
+        if (found != -1)
+        {
+            res++;
+            tmp = tmp.substr(found + 1, array_string.length() - (found + 1));
+            found = tmp.find(array_char);
+        }
+        else
+        {
+            break;
+        }
+    }
+    return res;
+}
+void relocate(int *&arr, int count)
+{
+    int *new_arr = new int[count];
+    for (int i = 0; i < count; i++)
+    {
+        new_arr[i] = arr[i];
+    }
+    delete[] arr;
+    arr = new_arr;
+}
 /* * * END implementation of class KnightAdventure * * */
