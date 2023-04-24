@@ -26,7 +26,7 @@ string BaseKnight::toString() const
     //      but the format output must be the same
     string s("");
     // s += "[Knight:id:" + to_string(id) + ",hp:" + to_string(hp) + ",maxhp:" + to_string(maxhp) + ",level:" + to_string(level) + ",gil:" + to_string(gil) + "," + bag->toString() + ",knight_type:" + typeString[knightType] + "]";
-    s += "[Knight:id:" + to_string(this->id) + ",hp:" + to_string(this->hp) + ",maxhp:" + to_string(this->maxhp) + ",level:" + to_string(this->level) + ",gil:" + to_string(this->gil);
+    s += "[Knight:id:" + to_string(id) + ",hp:" + to_string(hp) + ",maxhp:" + to_string(maxhp) + ",level:" + to_string(level) + ",gil:" + to_string(this->gil) + ",knight_type:" + typeString[knightType] + "]";
     return s;
 }
 
@@ -48,8 +48,9 @@ ArmyKnights::ArmyKnights(const string &file_armyknights)
     knights = new BaseKnight[this->numberOfKnightsLeft];
 
     // HP level phoenixdownI gil antidote
+    // maxhp, level, gil, antidote, phoenixdownI
     int arr[4];
-    int knight_index = 0;
+    int knightID = 0;
 
     while (getline(loadKnightsFile, text))
     {
@@ -63,26 +64,74 @@ ArmyKnights::ArmyKnights(const string &file_armyknights)
             i++;
         }
 
-        knights[knight_index] = *create(1, arr[0], arr[1], arr[2], arr[3], arr[4]);
-        knight_index++;
-        cout << "done" << endl;
+        knights[knightID] = *BaseKnight::create(knightID + 1, arr[0], arr[1], arr[3], arr[4], arr[2]);
+        knightID++;
     }
 
     loadKnightsFile.close();
 }
 
+bool BaseKnight::isPaladin()
+{
+    if (this->hp <= 1)
+    {
+        return false;
+    }
+    for (int i = 2; i * i <= this->hp; i++)
+    {
+        if (this->hp % i == 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool BaseKnight::isLancelot()
+{
+    return (this->hp == 888) ? true : false;
+}
+
+bool BaseKnight::isDragon()
+{
+    // TODO:Pythagoras: abc, acb, bac, bca, cba, cab
+    if (this->hp == 345 || this->hp == 354 || this->hp == 435 || this->hp == 453 || this->hp == 534 || this->hp == 543)
+    {
+        return true;
+    }
+    return false;
+}
+
 BaseKnight *BaseKnight::create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI)
 {
-    BaseKnight *temp = new BaseKnight;
-    temp->id = id;
-    temp->hp = maxhp;
-    temp->maxhp = maxhp;
-    temp->level = level;
-    temp->gil = gil;
-    temp->antidote = antidote;
+    BaseKnight *temp_knight = new BaseKnight;
+    temp_knight->id = id;
+    temp_knight->hp = maxhp;
+    temp_knight->maxhp = maxhp;
 
-    // Condition HP -> knightType and so on...
-    return temp;
+    // HP condition => knight type
+    if (temp_knight->isPaladin())
+    {
+        temp_knight->knightType = PALADIN;
+    }
+    else if (temp_knight->isLancelot())
+    {
+        temp_knight->knightType = LANCELOT;
+    }
+    else if (temp_knight->isDragon())
+    {
+        temp_knight->knightType = DRAGON;
+    }
+    else
+    {
+        temp_knight->knightType = NORMAL;
+    }
+
+    temp_knight->level = level;
+    temp_knight->gil = gil;
+    temp_knight->antidote = antidote;
+
+    return temp_knight;
 }
 
 BaseKnight *ArmyKnights::lastKnight() const
@@ -94,7 +143,7 @@ BaseKnight *ArmyKnights::lastKnight() const
 ArmyKnights::~ArmyKnights()
 {
     printf("This is deconstructor\n");
-    // delete this->knights;
+    delete this->knights;
 }
 
 bool ArmyKnights::fight(BaseOpponent *opponent)
@@ -117,19 +166,23 @@ int ArmyKnights::count() const
 bool ArmyKnights::hasPaladinShield() const
 {
     // TODO:
+    return this->PaladinShield;
 }
 
 bool ArmyKnights::hasLancelotSpear() const
 {
     // TODO:
+    return this->LancelotSpear;
 }
 bool ArmyKnights::hasGuinevereHair() const
 {
     // TODO:
+    return this->guinevereHair;
 }
 bool ArmyKnights::hasExcaliburSword() const
 {
     // TODO:
+    return this->excaliburSword;
 }
 
 void ArmyKnights::printInfo() const
@@ -164,7 +217,8 @@ KnightAdventure::KnightAdventure() // Contructor
 
 KnightAdventure::~KnightAdventure() // Decontructor
 {
-    // TODO:
+    delete this->armyKnights;
+    delete this->events;
 }
 
 void KnightAdventure::loadArmyKnights(const string &filename)

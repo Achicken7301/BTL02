@@ -39,10 +39,26 @@ protected:
     KnightType knightType;
 
 public:
+    bool isPaladin();
+    bool isLancelot();
+    bool isDragon();
     static BaseKnight *create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     string toString() const;
 };
 
+class PaladinKnight : public BaseKnight
+{
+};
+
+class LancelotKnight : public BaseKnight
+{
+};
+class DragonKnight : public BaseKnight
+{
+};
+class NormalKnight : public BaseKnight
+{
+};
 class BaseItem
 {
 public:
@@ -58,11 +74,12 @@ public:
     virtual string toString() const;
 };
 
-class ArmyKnights : public BaseKnight
+class ArmyKnights
 {
 private:
     int numberOfKnightsLeft;
     BaseKnight *knights;
+    bool PaladinShield, LancelotSpear, guinevereHair, excaliburSword;
 
 public:
     ArmyKnights(const string &file_armyknights);
