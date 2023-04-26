@@ -21,30 +21,18 @@ class BaseOpponent;
 // Class Event
 // Function to import file
 // Function
-void import(string file_array_string, int *&arr, int &num_arr);
 void extract_line_num(string line, int *array_address, int array_length, string delimeter);
-int countFreq(string array_string, string array_char);
-void relocate(int *&arr, int count);
-
 class Events
 {
 private:
-    int *events = new int[100];
+    int *events;
     int num_event;
 
 public:
-    int count()
-    {
-        return num_event;
-    };
-    int get(int i) const
-    {
-        return events[i];
-    };
-    Events(const string &file_event)
-    {
-        import(file_event, events, num_event);
-    };
+    int count() const;
+    int get(int i) const;
+    Events(const string &file_event);
+    ~Events();
 };
 
 class BaseKnight
