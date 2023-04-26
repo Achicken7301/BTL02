@@ -237,6 +237,7 @@ void KnightAdventure::loadEvents(const string &file_event)
     for (int i = 0; i < num_event; i++)
     {
         printf("Event no %d: %d \n", i, events->get(i));
+        printf("Event no %d: %d \n", i, events->get(i));
     }
     delete events;
 };
