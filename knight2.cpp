@@ -230,14 +230,15 @@ void KnightAdventure::loadArmyKnights(const string &filename)
 
 void KnightAdventure::loadEvents(const string &file_event)
 {
-    std::cout<<'Load Event'<<endl;
-    Events *events=new Events(file_event);
-    int num_event=events->count();
-    std::cout<<std::to_string(num_event)<<endl;
-    for (int i=0;i<num_event;i++)
+    printf("Load Event \n");
+    Events *events = new Events(file_event);
+    int num_event = events->count();
+    std::cout << std::to_string(num_event) << endl;
+    for (int i = 0; i < num_event; i++)
     {
-        printf("Event no %d: %d \n",i,events->get(i));
+        printf("Event no %d: %d \n", i, events->get(i));
     }
+    delete events;
 };
 
 void KnightAdventure::run()
@@ -247,34 +248,35 @@ void KnightAdventure::run()
 // Class Event
 
 // Class Events
-// Void to Import file
-void import(string file_array_string, int* &arr,int &num_arr)
+int Events::count() const
+{
+    return Events::num_event;
+};
+int Events::get(int i) const
+{
+    return Events::events[i];
+};
+Events::Events(const string &file_event)
 {
     string line;
-    ifstream myfile(file_array_string);
-    if (myfile.is_open())
+    ifstream myfile(file_event);
+    getline(myfile, line);
+    this->num_event = stoi(line);
+    this->events = new int[this->num_event];
+    int pos = myfile.tellg();
+    while (getline(myfile, line))
     {
-        int pos = myfile.tellg();
-        while (getline(myfile, line))
-        {
-            if(pos==0)
-            {
-                num_arr=std::stoi(line);
-            }
-            else
-            {
-                extract_line_num(line, arr, num_arr, " ");
-                relocate(arr, num_arr);
-            }
-            pos = myfile.tellg(); // end pos in a line
-        }
-        myfile.seekg(0); // set file pointer to the beginning of the file
-        myfile.close();
+        extract_line_num(line, this->events, this->num_event, " ");
     }
-    else
-        cout << "Unable to open Input file";
+    myfile.seekg(0); // set file pointer to the beginning of the file
+    myfile.close();
+};
+Events::~Events()
+{
+    printf("Delete Event \n");
+    delete this->events;
 }
-// From each line convert to int and save into the address of variable
+// Function to load file
 void extract_line_num(string line, int *array_address, int array_length, string delimeter)
 {
     int length = line.length();
@@ -295,35 +297,5 @@ void extract_line_num(string line, int *array_address, int array_length, string 
     }
 }
 // Caculate the num of element from file (just in event)
-int countFreq(string array_string, string array_char)
-{
-    int length = array_string.length();
-    string tmp = array_string;
-    int res = 0;
-    int found = array_string.find(array_char);
-    for (int i = 0; i <= length; i++)
-    {
-        if (found != -1)
-        {
-            res++;
-            tmp = tmp.substr(found + 1, array_string.length() - (found + 1));
-            found = tmp.find(array_char);
-        }
-        else
-        {
-            break;
-        }
-    }
-    return res;
-}
-void relocate(int *&arr, int count)
-{
-    int *new_arr = new int[count];
-    for (int i = 0; i < count; i++)
-    {
-        new_arr[i] = arr[i];
-    }
-    delete[] arr;
-    arr = new_arr;
-}
+
 /* * * END implementation of class KnightAdventure * * */
