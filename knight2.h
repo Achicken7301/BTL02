@@ -20,18 +20,20 @@ class BaseBag;
 class BaseOpponent;
 // Class Event
 // Function to import file
-// Function 
-void import(string file_array_string, int* &arr,int &num_arr);
+// Function
+void import(string file_array_string, int *&arr, int &num_arr);
 void extract_line_num(string line, int *array_address, int array_length, string delimeter);
 int countFreq(string array_string, string array_char);
-void relocate(int*&arr,int count);
+void relocate(int *&arr, int count);
+
 class Events
 {
 private:
-    int* events=new int [100];
+    int *events = new int[100];
     int num_event;
+
 public:
-    int count() 
+    int count()
     {
         return num_event;
     };
@@ -41,7 +43,7 @@ public:
     };
     Events(const string &file_event)
     {
-        import(file_event,events,num_event);
+        import(file_event, events, num_event);
     };
 };
 

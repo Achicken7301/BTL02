@@ -230,13 +230,13 @@ void KnightAdventure::loadArmyKnights(const string &filename)
 
 void KnightAdventure::loadEvents(const string &file_event)
 {
-    std::cout<<'Load Event'<<endl;
-    Events *events=new Events(file_event);
-    int num_event=events->count();
-    std::cout<<std::to_string(num_event)<<endl;
-    for (int i=0;i<num_event;i++)
+    std::cout << 'Load Event' << endl;
+    Events *events = new Events(file_event);
+    int num_event = events->count();
+    std::cout << std::to_string(num_event) << endl;
+    for (int i = 0; i < num_event; i++)
     {
-        printf("Event no %d: %d \n",i,events->get(i));
+        printf("Event no %d: %d \n", i, events->get(i));
     }
 };
 
@@ -244,11 +244,19 @@ void KnightAdventure::run()
 {
     // TODO:
 }
-// Class Event
 
-// Class Events
-// Void to Import file
-void import(string file_array_string, int* &arr,int &num_arr)
+/* * * END implementation of class KnightAdventure * * */
+
+/* * * BEGIN implementation of class Events * * */
+
+/**
+ * @brief This function do something???
+ *
+ * @param file_array_string
+ * @param arr
+ * @param num_arr
+ */
+void import(string file_array_string, int *&arr, int &num_arr)
 {
     string line;
     ifstream myfile(file_array_string);
@@ -257,9 +265,9 @@ void import(string file_array_string, int* &arr,int &num_arr)
         int pos = myfile.tellg();
         while (getline(myfile, line))
         {
-            if(pos==0)
+            if (pos == 0)
             {
-                num_arr=std::stoi(line);
+                num_arr = std::stoi(line);
             }
             else
             {
@@ -274,6 +282,7 @@ void import(string file_array_string, int* &arr,int &num_arr)
     else
         cout << "Unable to open Input file";
 }
+
 // From each line convert to int and save into the address of variable
 void extract_line_num(string line, int *array_address, int array_length, string delimeter)
 {
@@ -294,7 +303,14 @@ void extract_line_num(string line, int *array_address, int array_length, string 
         line = line.substr(line_blank + 1, length - line_blank);
     }
 }
-// Caculate the num of element from file (just in event)
+
+/**
+ * @brief Caculate the num of element from file (just in event)
+ * 
+ * @param array_string 
+ * @param array_char 
+ * @return int 
+ */
 int countFreq(string array_string, string array_char)
 {
     int length = array_string.length();
@@ -316,6 +332,7 @@ int countFreq(string array_string, string array_char)
     }
     return res;
 }
+
 void relocate(int *&arr, int count)
 {
     int *new_arr = new int[count];
@@ -326,4 +343,5 @@ void relocate(int *&arr, int count)
     delete[] arr;
     arr = new_arr;
 }
-/* * * END implementation of class KnightAdventure * * */
+
+/* * * END implementation of class Events * * */
