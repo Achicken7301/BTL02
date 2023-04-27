@@ -18,9 +18,7 @@ enum KnightType
 
 class BaseBag;
 class BaseOpponent;
-// Class Event
-// Function to import file
-// Function
+
 void extract_line_num(string line, int *array_address, int array_length, string delimeter);
 class Events
 {

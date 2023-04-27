@@ -246,17 +246,26 @@ void KnightAdventure::run()
 {
     // TODO:
 }
-// Class Event
 
-// Class Events
+/* * * END implementation of class KnightAdventure * * */
+
+/* * * BEGIN implementation of class Events * * */
+
+/**
+ * @brief Caculate the num of element from file (just in event)
+ *
+ * @return int
+ */
 int Events::count() const
 {
     return Events::num_event;
 };
+
 int Events::get(int i) const
 {
     return Events::events[i];
 };
+
 Events::Events(const string &file_event)
 {
     string line;
@@ -272,12 +281,21 @@ Events::Events(const string &file_event)
     myfile.seekg(0); // set file pointer to the beginning of the file
     myfile.close();
 };
+
 Events::~Events()
 {
     printf("Delete Event \n");
     delete this->events;
 }
-// Function to load file
+
+/**
+ * @brief Method to load file
+ *
+ * @param line
+ * @param array_address
+ * @param array_length
+ * @param delimeter
+ */
 void extract_line_num(string line, int *array_address, int array_length, string delimeter)
 {
     int length = line.length();
@@ -297,6 +315,5 @@ void extract_line_num(string line, int *array_address, int array_length, string 
         line = line.substr(line_blank + 1, length - line_blank);
     }
 }
-// Caculate the num of element from file (just in event)
 
-/* * * END implementation of class KnightAdventure * * */
+/* * * END implementation of class Events * * */
