@@ -1,5 +1,32 @@
 #include "knight2.h"
 
+/* * * BEGIN implementation of class BaseOpponent * * */
+
+string BaseOpponent::getName() const
+{
+    return this->name;
+}
+
+void BaseOpponent::calcLevelO(int event_index, int event_id)
+{
+    this->level = ((event_index + event_id) % 10) + 1;
+}
+
+void BaseKnight::decreaseHP(int HP)
+{
+    this->hp -= HP;
+
+    // if this.hp < 0
+}
+
+void BaseKnight::increaseGil(int GIL)
+{
+    this->gil += GIL;
+    if (this->gil > 999)
+        this->gil = 999;
+}
+
+/* * * END implementation of class BaseOpponent * * */
 /* * * BEGIN implementation of class BaseBag * * */
 bool BaseBag::insertFirst(BaseItem *item)
 {
@@ -69,6 +96,18 @@ ArmyKnights::ArmyKnights(const string &file_armyknights)
     }
 
     loadKnightsFile.close();
+
+    /*
+    Set these to false
+    bool hasPaladinShield() const;
+    bool hasLancelotSpear() const;
+    bool hasGuinevereHair() const;
+    bool hasExcaliburSword() const;
+    */
+    paladinShield = false;
+    lancelotSpear = false;
+    guinevereHair = false;
+    excaliburSword = false;
 }
 
 bool BaseKnight::isPaladin()
@@ -105,28 +144,29 @@ bool BaseKnight::isDragon()
 BaseKnight *BaseKnight::create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI)
 {
     BaseKnight *temp_knight = new BaseKnight;
-    temp_knight->id = id;
     temp_knight->hp = maxhp;
-    temp_knight->maxhp = maxhp;
 
     // HP condition => knight type
     if (temp_knight->isPaladin())
     {
-        temp_knight->knightType = PALADIN;
+        temp_knight = new PaladinKnight();
     }
     else if (temp_knight->isLancelot())
     {
-        temp_knight->knightType = LANCELOT;
+        temp_knight = new LancelotKnight();
     }
     else if (temp_knight->isDragon())
     {
-        temp_knight->knightType = DRAGON;
+        temp_knight = new DragonKnight();
     }
     else
     {
         temp_knight->knightType = NORMAL;
     }
 
+    temp_knight->id = id;
+    temp_knight->hp = maxhp;
+    temp_knight->maxhp = maxhp;
     temp_knight->level = level;
     temp_knight->gil = gil;
     temp_knight->antidote = antidote;
@@ -142,46 +182,161 @@ BaseKnight *ArmyKnights::lastKnight() const
 // Decontructor
 ArmyKnights::~ArmyKnights()
 {
-    printf("This is deconstructor\n");
+    // printf("Run ArmyKnights's deconstructor\n");
     delete this->knights;
 }
 
 bool ArmyKnights::fight(BaseOpponent *opponent)
 {
-    // TODO:
-    cout << "Army Knights Fight" << endl;
+    BaseKnight *lKnight = lastKnight();
+
+    if (lKnight->getLevel() >= opponent->getLevel())
+    {
+        lKnight->increaseGil(opponent->getGil());
+        return true;
+    }
+    else
+    {
+        lKnight->decreaseHP(opponent->getBaseDamage() * (opponent->getLevel() - lKnight->getLevel()));
+    }
+}
+
+void ArmyKnights::setPaladinShield(bool value)
+{
+    this->paladinShield = value;
+}
+void ArmyKnights::setLancelotSpear(bool value)
+{
+    this->lancelotSpear = value;
+}
+void ArmyKnights::setGuinevereHair(bool value)
+{
+    this->guinevereHair = value;
+}
+void ArmyKnights::setExcaliburSword(bool value)
+{
+    this->excaliburSword = value;
 }
 
 bool ArmyKnights::adventure(Events *events)
 {
-    // TODO:
-    cout << "Army Knights adventure" << endl;
+    // cout << "Army Knights adventure" << endl;
+    BaseOpponent *opponent;
+
+    for (int i = 0; i < events->count(); i++)
+    {
+        switch (events->get(i))
+        {
+        case MADBEAR:
+            // printf("Meet MadBear\n");
+            opponent = new MadBear();
+            opponent->calcLevelO(i, MADBEAR);
+            fight(opponent);
+            break;
+
+        case BANDIT:
+            // printf("Meet BANDIT\n");
+            break;
+
+        case LORDLUPIN:
+            // printf("Meet LORDLUPIN\n");
+            break;
+
+        case ELF:
+            // printf("Meet ELF\n");
+            break;
+
+        case TROLL:
+            // printf("Meet TROLL\n");
+            break;
+
+        case TORNBERY:
+            // printf("Meet TORNBERY\n");
+            break;
+
+        case QUEEN_OF_CARDS:
+            // printf("Meet QUEEN_OF_CARDS\n");
+            break;
+
+        case NINA_DE_RINGS:
+            // printf("Meet NINA_DE_RINGS\n");
+            break;
+
+        case VUON_SAU_RIENG:
+            // printf("Meet VUON_SAU_RIENG\n");
+            break;
+
+        case OMEGA_WEAPON:
+            // printf("Meet OMEGA_WEAPON\n");
+            break;
+        case HADES:
+            // printf("Meet HADES\n");
+            break;
+
+        case PHOUNIXDOWN_II:
+            // printf("Meet PHOUNIXDOWN_II\n");
+            break;
+
+        case PHOUNIXDOWN_III:
+            // printf("Meet PHOUNIXDOWN_III\n");
+            break;
+
+        case PHOUNIXDOWN_IV:
+            // printf("Meet PHOUNIXDOWN_IV\n");
+            break;
+
+        case PALADIN_SHIELD:
+            // printf("Meet PALADIN_SHIELD\n");
+            setPaladinShield(true);
+            break;
+
+        case LENCELOT_SPEAR:
+            // printf("Meet LENCELOT_SPEAR\n");
+            setLancelotSpear(true);
+            break;
+
+        case GUINEVERE_HAIR:
+            // printf("Meet GUINEVERE_HAIR\n");
+            setGuinevereHair(true);
+            break;
+
+        case EXCALIBUR:
+            // printf("Meet EXCALIBUR\n");
+            setExcaliburSword(true);
+            break;
+
+        case ULTIMECIA:
+            // printf("Meet ULTIMECIA\n");
+            if (hasExcaliburSword())
+                return true;
+            break;
+
+        default:
+            break;
+        }
+
+        printInfo();
+    }
 }
 
 int ArmyKnights::count() const
 {
     return this->numberOfKnightsLeft;
 }
-
 bool ArmyKnights::hasPaladinShield() const
 {
-    // TODO:
-    return this->PaladinShield;
+    return this->paladinShield;
 }
-
 bool ArmyKnights::hasLancelotSpear() const
 {
-    // TODO:
-    return this->LancelotSpear;
+    return this->lancelotSpear;
 }
 bool ArmyKnights::hasGuinevereHair() const
 {
-    // TODO:
     return this->guinevereHair;
 }
 bool ArmyKnights::hasExcaliburSword() const
 {
-    // TODO:
     return this->excaliburSword;
 }
 
@@ -223,28 +378,20 @@ KnightAdventure::~KnightAdventure() // Decontructor
 
 void KnightAdventure::loadArmyKnights(const string &filename)
 {
-    cout << "Loading " << filename << endl;
+    // cout << "Loading " << filename << endl;
     armyKnights = new ArmyKnights(filename);
-    armyKnights->printInfo();
 }
 
 void KnightAdventure::loadEvents(const string &file_event)
 {
-    printf("Load Event \n");
-    Events *events = new Events(file_event);
-    int num_event = events->count();
-    std::cout << std::to_string(num_event) << endl;
-    for (int i = 0; i < num_event; i++)
-    {
-        printf("Event no %d: %d \n", i, events->get(i));
-        printf("Event no %d: %d \n", i, events->get(i));
-    }
-    delete events;
+    // cout << "Loading " << file_event << endl;
+    events = new Events(file_event);
 };
 
 void KnightAdventure::run()
 {
     // TODO:
+    armyKnights->printResult(armyKnights->adventure(events));
 }
 
 /* * * END implementation of class KnightAdventure * * */
@@ -254,13 +401,19 @@ void KnightAdventure::run()
 /**
  * @brief Caculate the num of element from file (just in event)
  *
- * @return int
+ * @return number of events (int)
  */
 int Events::count() const
 {
-    return Events::num_event;
+    return this->num_event;
 };
 
+/**
+ * @brief Lấy mã sự kiện
+ *
+ * @param i
+ * @return mã sự kiện ở vị trí thứ i
+ */
 int Events::get(int i) const
 {
     return Events::events[i];
@@ -284,8 +437,9 @@ Events::Events(const string &file_event)
 
 Events::~Events()
 {
-    printf("Delete Event \n");
+    // printf("Run Event's Decontructor\n");
     delete this->events;
+    this->events = nullptr;
 }
 
 /**
@@ -296,7 +450,7 @@ Events::~Events()
  * @param array_length
  * @param delimeter
  */
-void extract_line_num(string line, int *array_address, int array_length, string delimeter)
+void Events::extract_line_num(string line, int *array_address, int array_length, string delimeter)
 {
     int length = line.length();
     int i = 0;
