@@ -12,11 +12,54 @@ void BaseOpponent::calcLevelO(int event_index, int event_id)
     this->level = ((event_index + event_id) % 10) + 1;
 }
 
+/* * * END implementation of class BaseOpponent * * */
+
+/* * * BEGIN implementation of class BaseBag * * */
+
+/* * * END implementation of class BaseBag * * */
+
+/* * * BEGIN implementation of class BaseBag * * */
+
+BaseBag::BaseBag()
+{
+    head = nullptr;
+    count = 0;
+}
+
+// bool BaseBag::insertFirst(BaseItem *item)
+bool BaseBag::insertFirst(BaseItem *item)
+{
+    // TODO:
+    if (this->head == nullptr)
+    {
+        head = item;
+    }
+    this->count++;
+
+    return true;
+}
+
+BaseItem *BaseBag::get(ItemType type)
+{
+    BaseItem *item;
+    return item;
+}
+
+string BaseBag::toString() const
+{
+    string s = "";
+    s += "Bag[count=";
+    s += to_string(this->getCount());
+    s += ";]";
+    return s;
+}
+
+/* * * END implementation of class BaseBag * * */
+
+/* * * BEGIN implementation of class BaseKnight * * */
 void BaseKnight::decreaseHP(int HP)
 {
     this->hp -= HP;
-
-    // if this.hp < 0
 }
 
 void BaseKnight::increaseGil(int GIL)
@@ -26,34 +69,14 @@ void BaseKnight::increaseGil(int GIL)
         this->gil = 999;
 }
 
-/* * * END implementation of class BaseOpponent * * */
-/* * * BEGIN implementation of class BaseBag * * */
-bool BaseBag::insertFirst(BaseItem *item)
-{
-    // TODO:
-}
-
-BaseItem *BaseBag::get(ItemType type)
-{
-    // TODO:
-}
-
-string BaseBag::toString() const
-{
-    // TODO:
-}
-/* * * END implementation of class BaseBag * * */
-
-/* * * BEGIN implementation of class BaseKnight * * */
-
 string BaseKnight::toString() const
 {
     string typeString[4] = {"PALADIN", "LANCELOT", "DRAGON", "NORMAL"};
     // inefficient version, students can change these code
     //      but the format output must be the same
     string s("");
-    // s += "[Knight:id:" + to_string(id) + ",hp:" + to_string(hp) + ",maxhp:" + to_string(maxhp) + ",level:" + to_string(level) + ",gil:" + to_string(gil) + "," + bag->toString() + ",knight_type:" + typeString[knightType] + "]";
-    s += "[Knight:id:" + to_string(id) + ",hp:" + to_string(hp) + ",maxhp:" + to_string(maxhp) + ",level:" + to_string(level) + ",gil:" + to_string(this->gil) + ",knight_type:" + typeString[knightType] + "]";
+    s += "[Knight:id:" + to_string(id) + ",hp:" + to_string(hp) + ",maxhp:" + to_string(maxhp) + ",level:" + to_string(level) + ",gil:" + to_string(gil) + "," + bag->toString() + ",knight_type:" + typeString[knightType] + "]";
+    // s += "[Knight:id:" + to_string(id) + ",hp:" + to_string(hp) + ",maxhp:" + to_string(maxhp) + ",level:" + to_string(level) + ",gil:" + to_string(this->gil) + ",knight_type:" + typeString[knightType] + "]";
     return s;
 }
 
@@ -64,12 +87,8 @@ string BaseKnight::toString() const
 ArmyKnights::ArmyKnights(const string &file_armyknights)
 {
     // LOAD FILE
-    string text;
-    fstream loadKnightsFile(file_armyknights);
-
-    // Get number of knights
-    getline(loadKnightsFile, text);
-    this->numberOfKnightsLeft = stoi(text);
+    ifstream loadKnightsFile(file_armyknights);
+    loadKnightsFile >> this->numberOfKnightsLeft;
 
     // Create a dynamic array of BaseKnights
     knights = new BaseKnight[this->numberOfKnightsLeft];
@@ -77,33 +96,15 @@ ArmyKnights::ArmyKnights(const string &file_armyknights)
     // HP level phoenixdownI gil antidote
     // maxhp, level, gil, antidote, phoenixdownI
     int arr[4];
-    int knightID = 0;
 
-    while (getline(loadKnightsFile, text))
+    for (int knightID = 0; knightID < this->numberOfKnightsLeft; knightID++)
     {
-        std::stringstream ss(text); // create a stringstream from the string
-        std::string token;
-        int i = 0;
-
-        while (getline(ss, token, ' '))
-        {
-            arr[i] = std::stoi(token); // convert each token to an integer and store it in the array
-            i++;
-        }
-
+        loadKnightsFile >> arr[0] >> arr[1] >> arr[2] >> arr[3] >> arr[4];
         knights[knightID] = *BaseKnight::create(knightID + 1, arr[0], arr[1], arr[3], arr[4], arr[2]);
-        knightID++;
     }
 
     loadKnightsFile.close();
 
-    /*
-    Set these to false
-    bool hasPaladinShield() const;
-    bool hasLancelotSpear() const;
-    bool hasGuinevereHair() const;
-    bool hasExcaliburSword() const;
-    */
     paladinShield = false;
     lancelotSpear = false;
     guinevereHair = false;
@@ -143,7 +144,7 @@ bool BaseKnight::isDragon()
 
 BaseKnight *BaseKnight::create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI)
 {
-    BaseKnight *temp_knight = new BaseKnight;
+    BaseKnight *temp_knight = new BaseKnight();
     temp_knight->hp = maxhp;
 
     // HP condition => knight type
@@ -169,7 +170,21 @@ BaseKnight *BaseKnight::create(int id, int maxhp, int level, int gil, int antido
     temp_knight->maxhp = maxhp;
     temp_knight->level = level;
     temp_knight->gil = gil;
-    temp_knight->antidote = antidote;
+
+    temp_knight->bag = new BaseBag();
+
+    // input phoenixdownI to BaseBag
+    // temp_knight->phoenixdownI = phoenixdownI;
+
+    for (size_t i = 0; i < phoenixdownI; i++)
+    {
+        temp_knight->bag->insertFirst(new PhoenixDown(PHOENIXDOWN_I_ITEM));
+    }
+
+    for (size_t i = 0; i < antidote; i++)
+    {
+        temp_knight->bag->insertFirst(new Antidote());
+    }
 
     return temp_knight;
 }
@@ -195,10 +210,10 @@ bool ArmyKnights::fight(BaseOpponent *opponent)
         lKnight->increaseGil(opponent->getGil());
         return true;
     }
-    else
-    {
-        lKnight->decreaseHP(opponent->getBaseDamage() * (opponent->getLevel() - lKnight->getLevel()));
-    }
+
+    lKnight->decreaseHP(opponent->getBaseDamage() * (opponent->getLevel() - lKnight->getLevel()));
+
+    // if lKnight.HP < 0 => check gil or bag...
 }
 
 void ArmyKnights::setPaladinShield(bool value)
@@ -223,14 +238,14 @@ bool ArmyKnights::adventure(Events *events)
     // cout << "Army Knights adventure" << endl;
     BaseOpponent *opponent;
 
-    for (int i = 0; i < events->count(); i++)
+    for (int index = 0; index <= events->count(); index++)
     {
-        switch (events->get(i))
+        switch (events->get(index))
         {
         case MADBEAR:
             // printf("Meet MadBear\n");
             opponent = new MadBear();
-            opponent->calcLevelO(i, MADBEAR);
+            opponent->calcLevelO(index, MADBEAR);
             fight(opponent);
             break;
 
@@ -273,15 +288,15 @@ bool ArmyKnights::adventure(Events *events)
             // printf("Meet HADES\n");
             break;
 
-        case PHOUNIXDOWN_II:
+        case PHOENIXDOWN_II:
             // printf("Meet PHOUNIXDOWN_II\n");
             break;
 
-        case PHOUNIXDOWN_III:
+        case PHOENIXDOWN_III:
             // printf("Meet PHOUNIXDOWN_III\n");
             break;
 
-        case PHOUNIXDOWN_IV:
+        case PHOENIXDOWN_IV:
             // printf("Meet PHOUNIXDOWN_IV\n");
             break;
 
@@ -306,9 +321,9 @@ bool ArmyKnights::adventure(Events *events)
             break;
 
         case ULTIMECIA:
-            // printf("Meet ULTIMECIA\n");
             if (hasExcaliburSword())
-                return true;
+                printInfo();
+            return true;
             break;
 
         default:
