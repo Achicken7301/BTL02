@@ -15,6 +15,7 @@ enum KnightType
 
 enum ItemType
 {
+    PHOENIXDOWN_ITEM,
     PHOENIXDOWN_I_ITEM = 111,
     PHOENIXDOWN_II_ITEM,
     PHOENIXDOWN_III_ITEM,
@@ -101,15 +102,18 @@ public:
 
 class BaseItem
 {
-protected:
+private:
     ItemType item;
     BaseItem *next;
 
 public:
-    BaseItem(ItemType itemType) : item(itemType), next(nullptr){};
+    BaseItem(ItemType itemType);
     // virtual bool canUse(BaseKnight *knight) = 0;
     // virtual void use(BaseKnight *knight) = 0;
     ItemType getItemType() const { return item; }
+    BaseItem *getItemNext() const { return next; }
+
+    void setItemNext(BaseItem *newItem) { next = newItem; }
 };
 
 class PhoenixDown : public BaseItem
@@ -127,7 +131,7 @@ public:
 class BaseBag
 {
 private:
-    BaseItem *head;
+    BaseItem *items_head;
     int count;
 
 public:
@@ -156,23 +160,17 @@ public:
     bool isDragon();
     static BaseKnight *create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     string toString() const;
-    int getHP() const
-    {
-        return this->hp;
-    }
+    int getHP() const { return this->hp; }
+
+    BaseBag *getBag() const { return this->bag; }
 
     void decreaseHP(int HP);
     void increaseGil(int GIL);
 
-    void setHP(int HP)
-    {
-        this->hp = HP;
-    }
+    void setHP(int HP) { this->hp = HP; }
+    int getMaxHP() const { return this->maxhp; }
 
-    int getLevel() const
-    {
-        return this->level;
-    }
+    int getLevel() const { return this->level; }
 };
 
 class PaladinKnight : public BaseKnight

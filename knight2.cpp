@@ -14,43 +14,122 @@ void BaseOpponent::calcLevelO(int event_index, int event_id)
 
 /* * * END implementation of class BaseOpponent * * */
 
-/* * * BEGIN implementation of class BaseBag * * */
+/* * * BEGIN implementation of class BaseItem * * */
 
-/* * * END implementation of class BaseBag * * */
+/**
+ * @brief Return ItemType in the Knight's Bag.
+ *
+ * @param type
+ * @return BaseItem*
+ */
+BaseItem *BaseBag::get(ItemType type)
+{
+    // TODO: LỖI HÀM NÀY
+    BaseItem *item, *pre_item;
+    item = this->items_head;
+
+    for (size_t index = 0; index < getCount(); index++)
+    {
+        if (item->getItemType() == type)
+        {
+            // Link pre to after BaseItem
+            // if is 1st index
+            if (index == 0)
+            {
+                this->items_head = item->getItemNext();
+                count--;
+                return item;
+            }
+            count--;
+            pre_item->setItemNext(item->getItemNext());
+            return item;
+        }
+        pre_item = item;
+        item = item->getItemNext();
+    }
+
+    return nullptr;
+}
+
+BaseItem::BaseItem(ItemType itemType)
+{
+    this->item = itemType;
+    this->next = nullptr;
+}
+
+/* * * END implementation of class BaseItem * * */
 
 /* * * BEGIN implementation of class BaseBag * * */
 
 BaseBag::BaseBag()
 {
-    head = nullptr;
+    items_head = nullptr;
     count = 0;
 }
 
-// bool BaseBag::insertFirst(BaseItem *item)
 bool BaseBag::insertFirst(BaseItem *item)
 {
-    // TODO:
-    if (this->head == nullptr)
+    BaseItem *newItem = new BaseItem(item->getItemType());
+    if (this->items_head == nullptr)
     {
-        head = item;
+        this->items_head = newItem;
+        this->count++;
+        return true;
     }
+
+    BaseItem *lastItem = this->items_head;
+    while (lastItem->getItemNext() != nullptr)
+    {
+        lastItem = lastItem->getItemNext();
+    }
+
     this->count++;
 
+    lastItem->setItemNext(newItem);
     return true;
-}
-
-BaseItem *BaseBag::get(ItemType type)
-{
-    BaseItem *item;
-    return item;
 }
 
 string BaseBag::toString() const
 {
+    BaseItem *lastItem = this->items_head;
+
     string s = "";
     s += "Bag[count=";
     s += to_string(this->getCount());
-    s += ";]";
+    s += ';';
+
+    // while (lastItem->getItemNext() != nullptr)
+    for (size_t i = 0; i < getCount(); i++)
+    {
+        switch (lastItem->getItemType())
+        {
+        case PHOENIXDOWN_I_ITEM:
+            s += "PhoenixI";
+            break;
+
+        case PHOENIXDOWN_II_ITEM:
+            s += "PhoenixII";
+            break;
+
+        case PHOENIXDOWN_III_ITEM:
+            s += "PhoenixIII";
+            break;
+
+        case ANTIDOTE:
+            s += "Antidote";
+            break;
+
+        default:
+            s += "NOT_FOUND";
+            break;
+        }
+
+        if (i < getCount() - 1)
+            s += ",";
+        lastItem = lastItem->getItemNext();
+    }
+
+    s += "]";
     return s;
 }
 
@@ -94,13 +173,12 @@ ArmyKnights::ArmyKnights(const string &file_armyknights)
     knights = new BaseKnight[this->numberOfKnightsLeft];
 
     // HP level phoenixdownI gil antidote
-    // maxhp, level, gil, antidote, phoenixdownI
-    int arr[4];
+    int maxhp, level, gil, antidote, phoenixdownI;
 
     for (int knightID = 0; knightID < this->numberOfKnightsLeft; knightID++)
     {
-        loadKnightsFile >> arr[0] >> arr[1] >> arr[2] >> arr[3] >> arr[4];
-        knights[knightID] = *BaseKnight::create(knightID + 1, arr[0], arr[1], arr[3], arr[4], arr[2]);
+        loadKnightsFile >> maxhp >> level >> phoenixdownI >> gil >> antidote;
+        knights[knightID] = *BaseKnight::create(knightID + 1, maxhp, level, gil, antidote, phoenixdownI);
     }
 
     loadKnightsFile.close();
@@ -212,7 +290,18 @@ bool ArmyKnights::fight(BaseOpponent *opponent)
     }
 
     lKnight->decreaseHP(opponent->getBaseDamage() * (opponent->getLevel() - lKnight->getLevel()));
+    if (lKnight->getHP() < 0)
+    {
+        switch (lKnight->getBag()->get(PHOENIXDOWN_I_ITEM)->getItemType())
+        {
+        case PHOENIXDOWN_I_ITEM:
+            lKnight->setHP(lKnight->getMaxHP());
+            break;
 
+        default:
+            break;
+        }
+    }
     // if lKnight.HP < 0 => check gil or bag...
 }
 
